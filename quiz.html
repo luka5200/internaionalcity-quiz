@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>国际城市灵魂匹配 - 找到你的全球天选之城</title>
+    <title>国际城市灵魂匹配 - 最终版</title>
     <style>
+        /* CSS 样式保持你满意的原版 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -16,310 +17,300 @@
             padding: 20px;
         }
         .quiz-container {
-            background: #fff; border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 700px; width: 100%; padding: 40px;
-            animation: fadeIn 0.5s ease-out;
+            background: #fff; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 700px; width: 100%; padding: 40px; animation: fadeIn 0.5s ease-out;
             max-height: 95vh; overflow-y: auto;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .screen { display: none; text-align: center; }
+        .start-screen, .quiz-screen, .result-screen { display: none; text-align: center; }
         .active { display: block; }
-        .title { font-size: 32px; color: #333; margin-bottom: 20px; font-weight: 600; }
-        .subtitle { font-size: 16px; color: #666; margin-bottom: 40px; line-height: 1.8; }
-        .start-btn {
-            background: linear-gradient(135deg, #00bcd4 0%, #4caf50 100%);
-            color: #fff; border: none; padding: 15px 40px;
-            font-size: 18px; border-radius: 50px; cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+        h1 { color: #2c3e50; margin-bottom: 20px; font-size: 32px; }
+        p.subtitle { color: #7f8c8d; margin-bottom: 30px; font-size: 18px; line-height: 1.6; }
+        .start-btn, .restart-btn {
+            background: linear-gradient(135deg, #00bcd4 0%, #4caf50 100%); color: white;
+            border: none; padding: 18px 50px; font-size: 20px; border-radius: 30px;
+            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.2); margin-top: 20px;
         }
-        .start-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,188,212,0.4); }
-        .progress { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; }
-        .progress-dot { width: 12px; height: 12px; border-radius: 50%; background: #e0e0e0; transition: background 0.3s; }
-        .progress-dot.active { background: linear-gradient(135deg, #00bcd4 0%, #4caf50 100%); }
+        .start-btn:hover, .restart-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+        .restart-btn { background: #6c757d; }
+        .progress { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; flex-wrap: wrap; }
+        .progress-dot { width: 10px; height: 10px; border-radius: 50%; background: #e0e0e0; transition: all 0.3s ease; }
         .progress-dot.completed { background: #4caf50; }
-        .question { font-size: 22px; color: #333; margin-bottom: 30px; font-weight: 500; line-height: 1.5; }
-        .options { display: flex; flex-direction: column; gap: 15px; }
+        .progress-dot.active { background: #00bcd4; transform: scale(1.3); }
+        .question { font-size: 22px; color: #2c3e50; margin-bottom: 30px; font-weight: 600; line-height: 1.4; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
         .option {
-            padding: 18px 25px; border: 2px solid #e0e0e0; border-radius: 12px;
-            cursor: pointer; transition: all 0.3s; font-size: 16px; color: #555; text-align: left; background: #fff;
+            background: #f8f9fa; border: 2px solid #e9ecef; padding: 16px 20px;
+            border-radius: 12px; cursor: pointer; transition: all 0.3s ease; font-size: 16px; text-align: left;
         }
-        .option:hover { border-color: #00bcd4; background: #e0f7fa; transform: translateX(5px); }
-        .result-card {
-            background: linear-gradient(135deg, #e0f7fa 0%, #fff 100%);
-            border-radius: 15px; padding: 30px; margin-top: 20px; border: 2px solid #00bcd4;
-        }
-        .city-name { font-size: 36px; color: #333; margin-bottom: 10px; font-weight: 700; }
-        .match-score { font-size: 24px; color: #4caf50; margin-bottom: 15px; font-weight: 600; }
-        .tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .tag { background: linear-gradient(135deg, #00bcd4 0%, #4caf50 100%); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 14px; }
-        .portrait { font-size: 16px; color: #555; line-height: 1.8; margin-bottom: 25px; font-style: italic; }
-        .radar-chart { width: 100%; height: 300px; margin: 20px 0; }
-        .recommended-cities { margin-top: 30px; text-align: left; }
-        .recommended-title { font-size: 18px; color: #00bcd4; margin-bottom: 15px; font-weight: 600; }
-        .recommended-list { display: flex; flex-direction: column; gap: 12px; }
-        .recommended-item {
-            background: #e0f7fa; border-radius: 10px; padding: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-left: 4px solid #00bcd4;
-        }
-        .recommended-city-name { font-size: 18px; font-weight: 600; color: #333; }
-        .recommended-score { font-size: 16px; font-weight: 600; color: #00bcd4; }
+        .option:hover { background: #e3f2fd; border-color: #00bcd4; transform: translateX(5px); }
+        .result-screen h2 { font-size: 36px; color: #00bcd4; margin-bottom: 20px; }
+        .match-score { font-size: 48px; font-weight: bold; color: #4caf50; margin: 20px 0; }
+        .city-name { font-size: 28px; color: #2c3e50; margin-bottom: 15px; }
+        .portrait { font-size: 16px; color: #7f8c8d; line-height: 1.8; margin-bottom: 20px; }
+        .tags { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+        .tag { background: linear-gradient(135deg, #00bcd4 0%, #4caf50 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; }
+        .radar-chart-container { width: 100%; max-width: 400px; margin: 30px auto; text-align: center; }
+        #radarChart { max-width: 100%; height: auto; }
+        .recommendation-section { background: #f8f9fa; border-radius: 15px; padding: 25px; margin-top: 30px; }
+        .recommendation-title { font-size: 20px; color: #2c3e50; margin-bottom: 20px; font-weight: 600; }
+        .recommended-cities { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .recommended-city { background: white; border: 2px solid #e9ecef; border-radius: 12px; padding: 15px; text-align: center; transition: all 0.3s ease; }
+        .recommended-city:hover { border-color: #00bcd4; transform: translateY(-3px); }
+        .recommended-city-icon { font-size: 32px; margin-bottom: 10px; }
+        .recommended-city-name { font-size: 18px; font-weight: 600; color: #2c3e50; margin-bottom: 5px; }
+        .recommended-city-score { font-size: 14px; color: #4caf50; font-weight: bold; }
+        @media (max-width: 600px) { .quiz-container { padding: 25px; } h1 { font-size: 24px; } }
     </style>
 </head>
 <body>
     <div class="quiz-container">
-        <div id="startScreen" class="screen active">
-            <h1 class="title">🌍 国际城市灵魂匹配</h1>
-            <p class="subtitle">15道精准题目，6维度全方位分析<br>从30个国际城市中找到最适合你的那一座</p>
+        <div class="start-screen active" id="startScreen">
+            <h1>🌍 国际城市灵魂匹配</h1>
+            <p class="subtitle">通过20个精心设计的问题，找到最适合你的全球天选之城<br>30座国际城市，6大维度精准匹配你的城市性格</p>
             <button class="start-btn" onclick="startQuiz()">开始测试</button>
         </div>
-
-        <div id="quizScreen" class="screen">
+        <div class="quiz-screen" id="quizScreen">
             <div class="progress" id="progress"></div>
             <div class="question" id="question"></div>
             <div class="options" id="options"></div>
         </div>
-
-        <div id="resultScreen" class="screen">
-            <h2 class="title" style="font-size: 28px;">✨ 你的全球天选之城</h2>
-            <div class="result-card">
-                <div class="city-name" id="cityName"></div>
-                <div class="match-score" id="matchScore"></div>
-                <div class="tags" id="tags"></div>
-                <div class="portrait" id="portrait"></div>
-                <canvas id="radarChart" class="radar-chart"></canvas>
-
-                <div class="recommended-cities">
-                    <div class="recommended-title">🌟 同类城市推荐</div>
-                    <div class="recommended-list" id="recommendedList"></div>
-                </div>
+        <div class="result-screen" id="resultScreen">
+            <h2>✨ 你的天选之城</h2>
+            <div class="city-name" id="cityName"></div>
+            <div class="match-score" id="matchScore"></div>
+            <div class="portrait" id="portrait"></div>
+            <div class="tags" id="tags"></div>
+            <div class="radar-chart-container"><canvas id="radarChart"></canvas></div>
+            <div class="recommendation-section">
+                <div class="recommendation-title">🏙️ 同类城市推荐</div>
+                <div class="recommended-cities" id="recommendedList"></div>
             </div>
-            <button class="start-btn" onclick="location.reload()" style="margin-top: 20px; background: #333;">重新测试</button>
+            <button class="restart-btn" onclick="restartQuiz()">重新测试</button>
         </div>
     </div>
 
     <script>
-        // 1. 完整的城市数据 (30个)
+        // 【完整数据：30个城市】
         const cities = [
-            { name: '东京', icon: '🗼', type: '国际大都市', wealth: 10, chill: 2, global: 9, vibe: 8, nature: 3, safety: 9, tags: ['#繁华都市', '#科技创新', '#二次元'], portrait: '你在繁华的霓虹都市中感受科技与传统交织的魅力。快速的生活节奏、无微不至的服务，完美契合你对效率和品质的追求。', strengths: ['财富', '安全'] },
-            { name: '首尔', icon: '🏙️', type: '时尚娱乐', wealth: 9, chill: 3, global: 8, vibe: 9, nature: 3, safety: 8, tags: ['#时尚之都', '#韩流文化', '#夜生活'], portrait: '你在时尚潮流与传统文化交融中感受活力四射的都市。韩流文化的中心，夜晚的街头永远热闹不眠。', strengths: ['财富', '活力'] },
-            { name: '新加坡', icon: '🦁', type: '商务科技', wealth: 10, chill: 6, global: 10, vibe: 7, nature: 9, safety: 10, tags: ['#花园城市', '#极致安全', '#高效'], portrait: '你在绿色花园中享受高效安全的生活。多元文化交融、法律严明，是追求稳定品质生活的理想之地。', strengths: ['全球', '安全', '自然'] },
-            { name: '曼谷', icon: '🛕', type: '历史文化', wealth: 5, chill: 5, global: 6, vibe: 8, nature: 4, safety: 6, tags: ['#寺庙之城', '#街头美食', '#热情'], portrait: '你在寺庙与夜市中感受东南亚的热情。充满活力、物价低廉，街头美食和夜生活让你每天都充满惊喜。', strengths: ['活力'] },
-            { name: '吉隆坡', icon: '🏢', type: '商务科技', wealth: 7, chill: 6, global: 7, vibe: 7, nature: 6, safety: 7, tags: ['#双子塔', '#多元文化', '#美食'], portrait: '你在双子塔下感受多元文化的交融。马来、华人、印度文化和谐共存，美食丰富多样。', strengths: ['财富'] },
-            { name: '迪拜', icon: '🏙️', type: '国际大都市', wealth: 10, chill: 4, global: 9, vibe: 7, nature: 2, safety: 9, tags: ['#奢华之都', '#沙漠奇迹', '#购物'], portrait: '你在奢华摩天楼中感受沙漠奇迹。无与伦比的奢华体验、免税购物，是追求极致生活的象征。', strengths: ['财富', '全球'] },
-            { name: '西雅图', icon: '🌲', type: '科技自然', wealth: 8, chill: 7, global: 8, vibe: 9, nature: 10, safety: 8, tags: ['#科技', '#咖啡', '#自然'], portrait: '你在科技与自然的完美融合中找到平衡。群山环抱、咖啡文化浓厚，适合科技工作者与自然爱好者。', strengths: ['自然', '活力'] },
-            { name: '大阪', icon: '🍜', type: '时尚娱乐', wealth: 8, chill: 5, global: 7, vibe: 9, nature: 4, safety: 8, tags: ['#美食之都', '#热情好客', '#关西'], portrait: '你在美食与热情中感受关西的独特魅力。比东京更有人情味，美食遍地，夜生活丰富多彩。', strengths: ['活力'] },
-            { name: '巴厘岛', icon: '🏝️', type: '海滨度假', wealth: 4, chill: 9, global: 5, vibe: 5, nature: 10, safety: 7, tags: ['#度假天堂', '#瑜伽圣地', '#慢生活'], portrait: '你在热带海滩与瑜伽冥想中找到内心的平静。慢节奏、自然风光，适合寻找生活真谛。', strengths: ['悠闲', '自然'] },
-            { name: '雅加达', icon: '🌆', type: '商务科技', wealth: 6, chill: 4, global: 6, vibe: 7, nature: 3, safety: 5, tags: ['#东南亚中心', '#商业机遇', '#活力'], portrait: '你在东南亚最大的城市感受活力与机遇。商业机会多、人口多元，适合开拓事业。', strengths: ['活力'] },
-            { name: '伦敦', icon: '🎡', type: '国际大都市', wealth: 9, chill: 4, global: 10, vibe: 8, nature: 5, safety: 7, tags: ['#历史名城', '#艺术之都', '#绅士'], portrait: '你在历史与现代交织中感受英伦文化。博物馆丰富、多元文化交融、艺术氛围浓厚。', strengths: ['全球'] },
-            { name: '巴黎', icon: '🗼', type: '文艺艺术', wealth: 9, chill: 5, global: 9, vibe: 8, nature: 5, safety: 7, tags: ['#浪漫之都', '#时尚', '#艺术'], portrait: '你在塞纳河畔感受浪漫与艺术的气息。卢浮宫、时尚、咖啡文化，艺术爱好者的天堂。', strengths: ['财富', '全球'] },
-            { name: '阿姆斯特丹', icon: '🚲', type: '宜居慢生活', wealth: 8, chill: 8, global: 8, vibe: 7, nature: 7, safety: 9, tags: ['#运河', '#自行车', '#自由包容'], portrait: '你在运河边自由骑行中感受包容与创新。开放包容、环保意识强、艺术氛围浓厚。', strengths: ['悠闲', '安全'] },
-            { name: '柏林', icon: '🏛️', type: '文艺艺术', wealth: 7, chill: 7, global: 7, vibe: 9, nature: 6, safety: 8, tags: ['#历史厚重', '#电音之都', '#自由'], portrait: '你在历史遗迹与艺术创意中感受多元文化。夜生活丰富、艺术创意、历史厚重。', strengths: ['活力', '悠闲'] },
-            { name: '巴塞罗那', icon: '🏰', type: '海滨度假', wealth: 6, chill: 7, global: 7, vibe: 8, nature: 8, safety: 7, tags: ['#高迪建筑', '#地中海', '#热情'], portrait: '你在高迪建筑与地中海风情中感受艺术与美食。阳光、海滩、建筑奇迹。', strengths: ['活力', '自然'] },
-            { name: '斯德哥尔摩', icon: '🏝️', type: '宜居慢生活', wealth: 9, chill: 7, global: 6, vibe: 6, nature: 9, safety: 10, tags: ['#北欧设计', '#环保', '#幸福'], portrait: '你在北欧简约设计与自然岛屿中找到生活平衡。工作生活平衡、环保意识强。', strengths: ['财富', '安全', '自然'] },
-            { name: '哥本哈根', icon: '🏰', type: '宜居慢生活', wealth: 8, chill: 8, global: 5, vibe: 5, nature: 8, safety: 10, tags: ['#童话王国', '#设计', '#舒适'], portrait: '你在童话般的城市中感受幸福与舒适。幸福感全球领先、自行车文化。', strengths: ['悠闲', '安全'] },
-            { name: '罗马', icon: '🏛️', type: '历史文化', wealth: 6, chill: 6, global: 7, vibe: 6, nature: 5, safety: 7, tags: ['#永恒之城', '#遗迹', '#美食'], portrait: '你在古罗马遗迹中感受历史的厚重。每一步都是历史，每一口都是艺术。', strengths: ['全球'] },
-            { name: '纽约', icon: '🗽', type: '国际大都市', wealth: 9, chill: 2, global: 10, vibe: 9, nature: 3, safety: 6, tags: ['#世界之都', '#百老汇', '#梦想'], portrait: '你在世界之都的脉搏中追逐梦想。百老汇、多元文化，这里是野心家的乐园。', strengths: ['全球', '活力'] },
-            { name: '洛杉矶', icon: '🎬', type: '时尚娱乐', wealth: 8, chill: 6, global: 9, vibe: 8, nature: 7, safety: 6, tags: ['#好莱坞', '#阳光海滩', '#明星'], portrait: '你在阳光海滩中感受好莱坞的魅力。电影、阳光、海滩，追星族的天堂。', strengths: ['全球', '活力'] },
-            { name: '旧金山', icon: '🌉', type: '商务科技', wealth: 8, chill: 5, global: 8, vibe: 7, nature: 8, safety: 6, tags: ['#硅谷', '#创新', '#金门大桥'], portrait: '你在科技创新中感受自由与多元。这里是改变世界的起点。', strengths: ['财富', '自然', '全球'] },
-            { name: '温哥华', icon: '🌲', type: '宜居慢生活', wealth: 7, chill: 8, global: 7, vibe: 5, nature: 10, safety: 9, tags: ['#自然', '#户外', '#宜居'], portrait: '你在自然山海中找到宜居生活的平衡。上午滑雪，下午出海。', strengths: ['自然', '悠闲', '安全'] },
-            { name: '悉尼', icon: '🏖️', type: '海滨度假', wealth: 8, chill: 7, global: 8, vibe: 8, nature: 9, safety: 8, tags: ['#歌剧院', '#海滩', '#阳光'], portrait: '你在歌剧院与海滩中感受阳光活力。南半球最耀眼的明珠。', strengths: ['自然', '全球'] },
-            { name: '墨尔本', icon: '☕', type: '宜居慢生活', wealth: 7, chill: 7, global: 6, vibe: 6, nature: 8, safety: 9, tags: ['#咖啡', '#艺术', '#花园'], portrait: '你在咖啡与艺术交融中感受悠闲生活。这里有世界上最好的咖啡和街头艺术。', strengths: ['悠闲', '安全', '自然'] },
-            { name: '奥克兰', icon: '⛵', type: '自然风光', wealth: 6, chill: 8, global: 5, vibe: 5, nature: 10, safety: 9, tags: ['#帆船之都', '#纯净', '#户外'], portrait: '你在帆船与自然中找到户外生活的乐趣。纯净的空气，友善的人民。', strengths: ['自然', '悠闲', '安全'] },
-            { name: '里约热内卢', icon: '🏖️', type: '海滨度假', wealth: 4, chill: 6, global: 5, vibe: 9, nature: 8, safety: 4, tags: ['#桑巴', '#狂欢节', '#热情'], portrait: '你在热情桑巴与海滩中感受南美活力。生命就该如此热烈和奔放。', strengths: ['活力', '自然'] },
-            { name: '布拉格', icon: '🏰', type: '历史文化', wealth: 6, chill: 7, global: 5, vibe: 6, nature: 6, safety: 9, tags: ['#童话', '#广场', '#啤酒'], portrait: '你在童话般的城堡中感受浪漫与历史。欧洲最美的古城之一。', strengths: ['悠闲', '安全'] },
-            { name: '维也纳', icon: '🎼', type: '历史文化', wealth: 7, chill: 7, global: 6, vibe: 5, nature: 7, safety: 9, tags: ['#音乐之都', '#优雅', '#咖啡馆'], portrait: '你在古典音乐与皇室建筑中感受优雅。连续多年被评为全球最宜居城市。', strengths: ['悠闲', '安全'] },
-            { name: '多伦多', icon: '🍁', type: '国际大都市', wealth: 8, chill: 6, global: 8, vibe: 7, nature: 6, safety: 8, tags: ['#多元', '#CN塔', '#友好'], portrait: '世界上最多元化的城市之一。包容、安全、充满机遇。', strengths: ['全球', '安全'] },
-            { name: '开普敦', icon: '⛰️', type: '自然风光', wealth: 5, chill: 7, global: 5, vibe: 7, nature: 10, safety: 4, tags: ['#桌山', '#好望角', '#红酒'], portrait: '世界尽头的美景。山海相连，葡萄酒庄园，自然爱好者的终极目的地。', strengths: ['自然', '悠闲'] }
+            { name: "东京", icon: "🗼", scores: [8, 7, 5, 5, 7, 6], portrait: "传统与现代完美融合的国际大都市，既有古老寺庙又有摩天大楼。科技与美食并重，生活节奏快但秩序井然。", tags: ["科技前沿", "美食天堂", "秩序井然"] },
+            { name: "纽约", icon: "🗽", scores: [9, 8, 4, 3, 9, 5], portrait: "永不眠的国际大都市，世界金融、文化、艺术中心。多元化、包容性强，机会无限。", tags: ["机会无限", "多元文化", "艺术中心"] },
+            { name: "伦敦", icon: "🎡", scores: [8, 9, 5, 6, 7, 6], portrait: "历史底蕴深厚的全球城市，皇室传统与现代文明交融。文化艺术氛围浓厚。", tags: ["历史悠久", "文化底蕴", "教育之都"] },
+            { name: "巴黎", icon: "🗼", scores: [6, 9, 5, 7, 7, 8], portrait: "浪漫之都，艺术与时尚的殿堂。咖啡馆文化、博物馆、时装周，处处是艺术气息。", tags: ["浪漫优雅", "艺术天堂", "时尚之都"] },
+            { name: "新加坡", icon: "🇸🇬", scores: [8, 6, 6, 7, 7, 8], portrait: "花园城市国家，东西方文化交汇点。安全、清洁、高效，政府政策稳定。", tags: ["安全宜居", "多元文化", "高效治理"] },
+            { name: "迪拜", icon: "🏙️", scores: [8, 5, 3, 6, 8, 7], portrait: "沙漠中的奇迹之城，奢华与现代的代名词。建筑奇迹、购物中心、免税天堂。", tags: ["奢华极致", "建筑奇迹", "免税天堂"] },
+            { name: "悉尼", icon: "🦘", scores: [6, 6, 9, 8, 6, 8], portrait: "阳光海滩之城，自然美景与都市生活完美结合。户外活动丰富，生活节奏轻松。", tags: ["阳光海滩", "户外天堂", "轻松悠闲"] },
+            { name: "多伦多", icon: "🍁", scores: [7, 7, 7, 7, 6, 7], portrait: "多元文化之都，包容性极强。四季分明，教育资源丰富。", tags: ["多元文化", "包容友好", "四季分明"] },
+            { name: "柏林", icon: "🏛️", scores: [6, 8, 6, 7, 8, 6], portrait: "历史与现代交织的欧洲心脏，创意与艺术中心。夜生活丰富，创业氛围浓厚。", tags: ["创意之都", "历史底蕴", "艺术先锋"] },
+            { name: "阿姆斯特丹", icon: "🚲", scores: [6, 8, 7, 9, 7, 7], portrait: "自由与包容的代名词，运河之城。自行车文化、开放政策、艺术博物馆。", tags: ["自由包容", "运河之城", "环保先锋"] },
+            { name: "首尔", icon: "🏙️", scores: [8, 6, 4, 4, 7, 5], portrait: "传统韩流与现代科技结合的活力都市。K-pop、化妆品、科技产品风靡全球。", tags: ["K-POP潮流", "科技之都", "时尚前沿"] },
+            { name: "上海", icon: "🌃", scores: [9, 6, 4, 4, 8, 5], portrait: "东西方文化交融的国际大都市，经济中心。外滩、陆家嘴、老城厢，多元并存。", tags: ["经济中心", "多元交融", "国际视野"] },
+            { name: "香港", icon: "🏙️", scores: [9, 6, 3, 3, 7, 5], portrait: "东方之珠，国际金融中心。购物天堂、美食聚集地、中西文化交融。", tags: ["金融中心", "购物天堂", "美食之都"] },
+            { name: "台北", icon: "🏮", scores: [6, 7, 6, 7, 6, 7], portrait: "人文气息浓厚的城市，夜市文化与科技产业并存。小吃天堂、科技企业聚集。", tags: ["人情味", "夜市文化", "科技产业"] },
+            { name: "曼谷", icon: "🛕", scores: [5, 7, 5, 5, 7, 5], portrait: "天使之城，寺庙与摩天楼共存。街头美食、按摩文化、购物天堂。", tags: ["热带风情", "寺庙文化", "美食天堂"] },
+            { name: "洛杉矶", icon: "🌴", scores: [7, 8, 8, 6, 8, 6], portrait: "娱乐之都，好莱坞的故乡。阳光海滩、影视产业、创新科技。", tags: ["娱乐之都", "好莱坞", "阳光海滩"] },
+            { name: "旧金山", icon: "🌉", scores: [9, 7, 8, 6, 7, 6], portrait: "科技创新中心，硅谷所在地。多元文化、环保意识强、创业氛围浓厚。", tags: ["科技创新", "硅谷中心", "环保先锋"] },
+            { name: "芝加哥", icon: "🏗️", scores: [7, 7, 4, 6, 6, 5], portrait: "风城，建筑与艺术的聚集地。摩天大楼发源地、爵士乐之乡、丰富美食。", tags: ["建筑之都", "爵士乐", "美食丰富"] },
+            { name: "温哥华", icon: "🌲", scores: [6, 6, 10, 8, 5, 8], portrait: "自然环境优美的城市，山海环绕。户外活动天堂、多元文化、生活节奏慢。", tags: ["自然之美", "户外天堂", "生活质量高"] },
+            { name: "蒙特利尔", icon: "🍁", scores: [5, 8, 7, 7, 6, 7], portrait: "法语文化中心，欧洲风情浓厚。艺术气息浓、音乐之城、冬夏活动丰富。", tags: ["法语文化", "艺术之城", "四季活动"] },
+            { name: "马德里", icon: "🏛️", scores: [6, 8, 6, 7, 8, 7], portrait: "热情奔放的首都，艺术与美食之城。普拉多博物馆、Tapas美食、夜生活丰富。", tags: ["艺术之都", "美食天堂", "热情奔放"] },
+            { name: "巴塞罗那", icon: "🏖️", scores: [6, 8, 9, 8, 7, 7], portrait: "高迪之城，地中海风情。建筑艺术、海滩度假、轻松生活。", tags: ["建筑艺术", "地中海风情", "休闲度假"] },
+            { name: "罗马", icon: "🏛️", scores: [5, 9, 5, 6, 6, 6], portrait: "永恒之城，历史遗迹遍布。古罗马、梵蒂冈、意大利美食。", tags: ["历史名城", "文化遗产", "美食之国"] },
+            { name: "斯德哥尔摩", icon: "🏰", scores: [7, 7, 8, 9, 5, 8], portrait: "北欧首都，设计与创新中心。简约设计、环保理念、工作生活平衡。", tags: ["设计之都", "环保理念", "工作生活平衡"] },
+            { name: "维也纳", icon: "🎵", scores: [5, 9, 7, 8, 6, 8], portrait: "音乐之都，优雅古典。古典音乐、咖啡馆文化、历史建筑。", tags: ["音乐之都", "古典艺术", "优雅生活"] },
+            { name: "布拉格", icon: "🏰", scores: [4, 9, 6, 7, 6, 7], portrait: "千塔之城，中世纪风貌完整。哥特建筑、啤酒文化、浪漫氛围。", tags: ["千塔之城", "中世纪风貌", "浪漫氛围"] },
+            { name: "布达佩斯", icon: "🏛️", scores: [4, 8, 7, 8, 6, 7], portrait: "多瑙河明珠，温泉与建筑之城。温泉浴场、壮丽建筑、生活成本低。", tags: ["温泉之都", "建筑瑰宝", "生活实惠"] },
+            { name: "开普敦", icon: "🏔️", scores: [5, 6, 10, 7, 6, 6], portrait: "自然与城市完美结合，桌山脚下。自然奇观、野生动物、多元文化。", tags: ["自然奇观", "野生动物", "多元文化"] },
+            { name: "里约热内卢", icon: "🏖️", scores: [4, 7, 9, 5, 9, 5], portrait: "热情奔放的海滨城市，桑巴与足球的故乡。基督像、科帕卡巴纳海滩、狂欢节。", tags: ["海滨城市", "桑巴热情", "运动天堂"] },
+            { name: "雷克雅未克", icon: "🌋", scores: [4, 7, 10, 8, 5, 7], portrait: "冰火之国首都，自然奇观遍布。极光、冰川、火山、温泉。", tags: ["自然奇观", "极光观赏", "探险天堂"] }
         ];
 
-        // 2. 题目配置 (你上传文件中是15道，我保持原样)
-        const config = { totalQuestions: 15 };
+        // 【完整数据：20道测试题】
         const questions = [
-            { dimension: 'wealth', question: '你更偏向哪种消费观？', options: [{ text: 'A. 精打细算，性价比优先', score: 3 }, { text: 'B. 适度消费，偶尔奢侈', score: 6 }, { text: 'C. 高品质生活，不差钱', score: 8 }, { text: 'D. 顶级奢华，无上限', score: 10 }] },
-            { dimension: 'chill', question: '理想的生活节奏？', options: [{ text: 'A. 快节奏，高效忙碌', score: 2 }, { text: 'B. 有张有弛，平衡工作', score: 5 }, { text: 'C. 轻松舒适，享受生活', score: 7 }, { text: 'D. 慢生活，度假模式', score: 10 }] },
-            { dimension: 'global', question: '你对文化多样性的期待？', options: [{ text: 'A. 保留本土特色', score: 3 }, { text: 'B. 适度国际化', score: 6 }, { text: 'C. 多元融合', score: 8 }, { text: 'D. 全球枢纽，世界公民', score: 10 }] },
-            { dimension: 'vibe', question: '你喜欢什么样的夜生活？', options: [{ text: 'A. 早点休息', score: 3 }, { text: 'B. 偶尔聚会', score: 6 }, { text: 'C. 经常外出', score: 8 }, { text: 'D. 不夜城，通宵狂欢', score: 10 }] },
-            { dimension: 'nature', question: '你对自然环境的需求？', options: [{ text: 'A. 城市功能优先', score: 2 }, { text: 'B. 需要基本绿化', score: 5 }, { text: 'C. 良好自然环境很重要', score: 8 }, { text: 'D. 必须靠近自然', score: 10 }] },
-            { dimension: 'safety', question: '你对城市安全性的要求？', options: [{ text: 'A. 一般注意', score: 4 }, { text: 'B. 比较在意', score: 6 }, { text: 'C. 非常在意', score: 8 }, { text: 'D. 极度重视，必须绝对安全', score: 10 }] },
-            { dimension: 'wealth', question: '你更看重生活品质还是发展机会？', options: [{ text: 'A. 生活品质', score: 4 }, { text: 'B. 品质与机会平衡', score: 6 }, { text: 'C. 机会更重要', score: 8 }, { text: 'D. 发展第一', score: 10 }] },
-            { dimension: 'chill', question: '你每天理想的工作时长？', options: [{ text: 'A. 10小时以上', score: 2 }, { text: 'B. 8-10小时', score: 5 }, { text: 'C. 6-8小时', score: 7 }, { text: 'D. 4-6小时', score: 10 }] },
-            { dimension: 'vibe', question: '你更喜欢哪种娱乐方式？', options: [{ text: 'A. 在家休息', score: 3 }, { text: 'B. 逛逛公园', score: 6 }, { text: 'C. 社交聚会', score: 8 }, { text: 'D. 狂欢派对', score: 10 }] },
-            { dimension: 'nature', question: '你对户外活动的热爱程度？', options: [{ text: 'A. 不太喜欢', score: 2 }, { text: 'B. 偶尔参与', score: 5 }, { text: 'C. 经常参与', score: 8 }, { text: 'D. 极度热爱', score: 10 }] },
-            { dimension: 'safety', question: '你对陌生人的态度？', options: [{ text: 'A. 开放友好', score: 4 }, { text: 'B. 友善但保持距离', score: 6 }, { text: 'C. 比较谨慎', score: 8 }, { text: 'D. 非常警惕', score: 10 }] },
-            { dimension: 'chill', question: '你对"慢生活"的认可度？', options: [{ text: 'A. 不认同', score: 2 }, { text: 'B. 部分认同', score: 5 }, { text: 'C. 比较认同', score: 7 }, { text: 'D. 完全认同', score: 10 }] },
-            { dimension: 'global', question: '你对异国文化的接受度？', options: [{ text: 'A. 喜欢同质化社区', score: 3 }, { text: 'B. 接受一定多样性', score: 6 }, { text: 'C. 享受文化交融', score: 8 }, { text: 'D. 热爱国际化', score: 10 }] },
-            { dimension: 'nature', question: '你对城市绿化的要求？', options: [{ text: 'A. 不太在意', score: 2 }, { text: 'B. 有基本绿化', score: 5 }, { text: 'C. 需要良好绿化', score: 8 }, { text: 'D. 必须是绿色城市', score: 10 }] },
-            { dimension: 'wealth', question: '你对住房的要求？', options: [{ text: 'A. 能住就行', score: 3 }, { text: 'B. 舒适为主', score: 6 }, { text: 'C. 高端社区', score: 8 }, { text: 'D. 顶级豪宅', score: 10 }] }
+            { question: "你更倾向于在哪种环境生活？", options: [ { text: "繁华都市，机会无限", dimension: 0, score: 8 }, { text: "文化古城，历史底蕴", dimension: 1, score: 8 }, { text: "自然风光，山海相伴", dimension: 2, score: 9 }, { text: "平衡发展，生活舒适", dimension: 3, score: 7 } ] },
+            { question: "你更看重生活中的什么？", options: [ { text: "事业成功与财富积累", dimension: 0, score: 9 }, { text: "文化体验与艺术熏陶", dimension: 1, score: 9 }, { text: "自然与户外活动", dimension: 2, score: 8 }, { text: "工作与生活的平衡", dimension: 3, score: 8 } ] },
+            { question: "你理想的社交方式是？", options: [ { text: "商务社交，拓展人脉", dimension: 4, score: 8 }, { text: "文化交流，结识不同背景的人", dimension: 4, score: 7 }, { text: "户外运动，一起探险", dimension: 5, score: 8 }, { text: "轻松聚会，朋友小聚", dimension: 5, score: 7 } ] },
+            { question: "你对美食的态度是？", options: [ { text: "米其林餐厅，追求精致", dimension: 1, score: 8 }, { text: "街头小吃，体验地道", dimension: 1, score: 7 }, { text: "健康饮食，重视营养", dimension: 5, score: 7 }, { text: "什么都爱吃，不挑剔", dimension: 3, score: 5 } ] },
+            { question: "你更喜欢的购物体验？", options: [ { text: "奢侈品购物，享受品质", dimension: 0, score: 8 }, { text: "设计师品牌，追求个性", dimension: 1, score: 8 }, { text: "户外装备，实用为主", dimension: 2, score: 7 }, { text: "日用品采购，经济实惠", dimension: 3, score: 6 } ] },
+            { question: "你对交通的偏好是？", options: [ { text: "地铁公交，高效便捷", dimension: 0, score: 8 }, { text: "自行车，环保健康", dimension: 3, score: 8 }, { text: "自驾出行，自由灵活", dimension: 3, score: 6 }, { text: "步行慢行，享受过程", dimension: 5, score: 7 } ] },
+            { question: "你更喜欢哪种天气？", options: [ { text: "四季分明，体验变化", dimension: 3, score: 7 }, { text: "温暖如春，舒适宜人", dimension: 2, score: 6 }, { text: "热带气候，阳光充足", dimension: 2, score: 5 }, { text: "凉爽宜人，适合户外", dimension: 2, score: 8 } ] },
+            { question: "你对夜生活的态度？", options: [ { text: "酒吧夜店，彻夜狂欢", dimension: 4, score: 9 }, { text: "剧院演出，文化体验", dimension: 1, score: 9 }, { text: "户外夜钓，星空露营", dimension: 2, score: 7 }, { text: "家里休息，早睡早起", dimension: 5, score: 5 } ] },
+            { question: "你更重视的教育资源是？", options: [ { text: "国际学校，全球视野", dimension: 0, score: 8 }, { text: "名校林立，学术氛围", dimension: 1, score: 9 }, { text: "实践导向，技能培养", dimension: 4, score: 6 }, { text: "全面发展，素质教育", dimension: 5, score: 8 } ] },
+            { question: "你理想的生活方式是？", options: [ { text: "快节奏，追求效率", dimension: 0, score: 9 }, { text: "优雅从容，享受生活", dimension: 1, score: 9 }, { text: "亲近自然，户外运动", dimension: 2, score: 9 }, { text: "轻松自在，简单生活", dimension: 5, score: 7 } ] },
+            { question: "你对房价和生活成本的接受度？", options: [ { text: "可以承受，追求地段和品质", dimension: 0, score: 8 }, { text: "中等即可，重视性价比", dimension: 3, score: 7 }, { text: "希望较低，重视实用性", dimension: 3, score: 5 }, { text: "不在意，只要城市对味", dimension: 5, score: 4 } ] },
+            { question: "你更喜欢哪种建筑风格？", options: [ { text: "现代摩天楼，玻璃幕墙", dimension: 0, score: 8 }, { text: "古典建筑，历史韵味", dimension: 1, score: 9 }, { text: "创意设计，个性十足", dimension: 1, score: 7 }, { text: "自然融合，生态友好", dimension: 2, score: 8 } ] },
+            { question: "你对艺术的兴趣程度？", options: [ { text: "艺术狂热者，经常观展", dimension: 1, score: 9 }, { text: "有一定兴趣，偶尔参与", dimension: 1, score: 6 }, { text: "不太关注，实用为主", dimension: 0, score: 5 }, { text: "通过自然获得艺术感", dimension: 2, score: 6 } ] },
+            { question: "你更倾向的工作环境？", options: [ { text: "写字楼，商务中心", dimension: 0, score: 8 }, { text: "创意园区，灵活自由", dimension: 4, score: 7 }, { text: "远程办公，随处可工作", dimension: 5, score: 7 }, { text: "户外相关，如导游、摄影", dimension: 2, score: 8 } ] },
+            { question: "你对宠物和动物的态度？", options: [ { text: "宠物爱好者，家里有毛孩子", dimension: 5, score: 7 }, { text: "喜欢，但还没养", dimension: 5, score: 5 }, { text: "喜欢观察野生动物", dimension: 2, score: 8 }, { text: "不太关注动物", dimension: 0, score: 4 } ] },
+            { question: "你对节日和庆典的态度？", options: [ { text: "热衷参加各种庆典活动", dimension: 4, score: 8 }, { text: "偶尔参加，图个热闹", dimension: 4, score: 6 }, { text: "喜欢安静，不太参与", dimension: 5, score: 5 }, { text: "喜欢自然主题的节日", dimension: 2, score: 7 } ] },
+            { question: "你对运动的偏好？", options: [ { text: "健身房，室内运动", dimension: 5, score: 6 }, { text: "户外跑步、骑行", dimension: 2, score: 8 }, { text: "球类运动，团队竞技", dimension: 4, score: 7 }, { text: "不太爱运动", dimension: 5, score: 4 } ] },
+            { question: "你对时尚和流行的关注度？", options: [ { text: "时尚达人，紧跟潮流", dimension: 1, score: 8 }, { text: "有一定关注，适度消费", dimension: 1, score: 6 }, { text: "实用为主，不太在意", dimension: 0, score: 5 }, { text: "喜欢复古、经典风格", dimension: 1, score: 7 } ] },
+            { question: "你对语言和文化多样性的态度？", options: [ { text: "热爱学习新语言", dimension: 1, score: 8 }, { text: "愿意接触不同文化", dimension: 1, score: 6 }, { text: "母语为主，简单交流", dimension: 0, score: 5 }, { text: "通过旅行体验文化", dimension: 2, score: 7 } ] },
+            { question: "你更看重城市的什么特质？", options: [ { text: "国际影响力，知名度", dimension: 0, score: 9 }, { text: "文化深度，历史积淀", dimension: 1, score: 9 }, { text: "自然环境，宜居程度", dimension: 2, score: 9 }, { text: "生活便利，性价比高", dimension: 3, score: 7 } ] }
         ];
 
-        // 3. 核心逻辑（已修复死锁 Bug）
-        let currentIdx = 0;
-        let userScores = { wealth: 0, chill: 0, global: 0, vibe: 0, nature: 0, safety: 0 };
-        const dimensionMap = { '财富': 'wealth', '悠闲': 'chill', '全球': 'global', '活力': 'vibe', '自然': 'nature', '安全': 'safety' };
+        let userScores = [0, 0, 0, 0, 0, 0];
+        let currentQuestionIndex = 0;
+        const totalQuestions = questions.length;
 
         function startQuiz() {
-            // 【关键修复】这里不再检查 LocalStorage，直接开始
+            // 【修正】这里去掉了所有检查，直接开始，因为 index.html 已经拦过一道了
             document.getElementById('startScreen').classList.remove('active');
             document.getElementById('quizScreen').classList.add('active');
+            currentQuestionIndex = 0;
+            userScores = [0, 0, 0, 0, 0, 0];
             renderProgress();
             renderQuestion();
         }
 
         function renderProgress() {
-            const container = document.getElementById('progress');
-            container.innerHTML = '';
-            for (let i = 0; i < config.totalQuestions; i++) {
+            const progressContainer = document.getElementById('progress');
+            progressContainer.innerHTML = '';
+            for (let i = 0; i < totalQuestions; i++) {
                 const dot = document.createElement('div');
-                dot.className = `progress-dot ${i < currentIdx ? 'completed' : ''} ${i === currentIdx ? 'active' : ''}`;
-                container.appendChild(dot);
+                dot.className = 'progress-dot';
+                if (i < currentQuestionIndex) dot.classList.add('completed');
+                else if (i === currentQuestionIndex) dot.classList.add('active');
+                progressContainer.appendChild(dot);
             }
         }
 
         function renderQuestion() {
-            const q = questions[currentIdx];
-            document.getElementById('question').textContent = `第 ${currentIdx + 1}/${config.totalQuestions} 题：${q.question}`;
-            const container = document.getElementById('options');
-            container.innerHTML = '';
-            q.options.forEach((opt, idx) => {
-                const div = document.createElement('div');
-                div.className = 'option';
-                div.textContent = opt.text;
-                div.onclick = () => selectOption(idx);
-                container.appendChild(div);
+            const question = questions[currentQuestionIndex];
+            document.getElementById('question').textContent = `第 ${currentQuestionIndex + 1}/${totalQuestions} 题：${question.question}`;
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option.text;
+                optionElement.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionElement);
             });
         }
 
-        function selectOption(idx) {
-            const q = questions[currentIdx];
-            userScores[q.dimension] += q.options[idx].score;
-            setTimeout(() => {
-                currentIdx++;
-                if (currentIdx < config.totalQuestions) {
-                    renderProgress();
-                    renderQuestion();
-                } else {
-                    showResult();
-                }
-            }, 300);
-        }
-
-        function calculateMatchScore(city, userScores) {
-            // 找到用户得分最高的维度
-            let userMaxDim = Object.keys(userScores).reduce((a, b) => userScores[a] > userScores[b] ? a : b);
-            
-            // 基础差异计算
-            let totalDiff = 0;
-            ['wealth', 'chill', 'global', 'vibe', 'nature', 'safety'].forEach(dim => {
-                totalDiff += Math.abs((city[dim] || 0) - (userScores[dim] || 0));
-            });
-            
-            let match = Math.max(0, 1 - totalDiff / 60);
-            
-            // 优势加成（修复了之前的变量引用错误）
-            // 将英文维度转换为中文，以便匹配 city.strengths
-            const dimNameMap = { 'wealth': '财富', 'chill': '悠闲', 'global': '全球', 'vibe': '活力', 'nature': '自然', 'safety': '安全' };
-            if (city.strengths && city.strengths.includes(dimNameMap[userMaxDim])) {
-                match += 0.1; 
-            }
-            
-            // 随机因子
-            return Math.round(Math.min(98, Math.max(40, match * 100 + Math.random() * 5)));
+        function selectOption(index) {
+            const selectedOption = questions[currentQuestionIndex].options[index];
+            userScores[selectedOption.dimension] += selectedOption.score;
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= totalQuestions) showResult();
+            else { renderProgress(); renderQuestion(); }
         }
 
         function showResult() {
             document.getElementById('quizScreen').classList.remove('active');
             document.getElementById('resultScreen').classList.add('active');
 
-            // 计算所有城市匹配度
-            const scoredCities = cities.map(city => ({
-                ...city,
-                score: calculateMatchScore(city, userScores)
-            })).sort((a, b) => b.score - a.score);
+            let cityMatchScores = [];
+            cities.forEach((city, index) => {
+                let totalDiff = 0;
+                for (let i = 0; i < 6; i++) {
+                    const normalizedUserScore = userScores[i] / 20;
+                    const normalizedCityScore = city.scores[i] / 10;
+                    totalDiff += Math.pow(normalizedUserScore - normalizedCityScore, 2);
+                }
+                const matchScore = Math.round((1 - Math.sqrt(totalDiff / 6)) * 100);
+                cityMatchScores.push({ index: index, name: city.name, icon: city.icon, score: Math.max(10, matchScore), city: city });
+            });
 
-            const best = scoredCities[0];
+            cityMatchScores.sort((a, b) => b.score - a.score);
+            const bestMatch = cityMatchScores[0];
 
-            // 填充数据
-            document.getElementById('cityName').innerHTML = `${best.icon} ${best.name}`;
-            document.getElementById('matchScore').textContent = `匹配度：${best.score}%`;
-            document.getElementById('portrait').textContent = best.portrait;
-            
-            const tagsDiv = document.getElementById('tags');
-            tagsDiv.innerHTML = best.tags.map(t => `<span class="tag">${t}</span>`).join('');
+            document.getElementById('cityName').textContent = `${bestMatch.icon} ${bestMatch.name}`;
+            document.getElementById('matchScore').textContent = `匹配度：${bestMatch.score}%`;
+            document.getElementById('portrait').textContent = bestMatch.city.portrait;
 
-            // 绘制雷达图
-            drawRadarChart(best, userScores);
+            const tagsContainer = document.getElementById('tags');
+            tagsContainer.innerHTML = '';
+            bestMatch.city.tags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.textContent = tag;
+                tagsContainer.appendChild(tagElement);
+            });
 
-            // 推荐列表
-            const listDiv = document.getElementById('recommendedList');
-            listDiv.innerHTML = '';
-            scoredCities.slice(1, 4).forEach(c => {
-                listDiv.innerHTML += `
-                    <div class="recommended-item">
-                        <div class="recommended-city-name">${c.icon} ${c.name}</div>
-                        <div class="recommended-score">${c.score}%</div>
-                    </div>
-                `;
+            drawRadarChart(bestMatch.city);
+
+            const recommendedList = document.getElementById('recommendedList');
+            recommendedList.innerHTML = '';
+            const recommendations = cityMatchScores.slice(1, 5);
+            recommendations.forEach(rec => {
+                const cityElement = document.createElement('div');
+                cityElement.className = 'recommended-city';
+                cityElement.innerHTML = `<div class="recommended-city-icon">${rec.icon}</div><div class="recommended-city-name">${rec.name}</div><div class="recommended-city-score">匹配度：${rec.score}%</div>`;
+                recommendedList.appendChild(cityElement);
             });
         }
 
-        function drawRadarChart(city, userScores) {
+        function drawRadarChart(city) {
             const canvas = document.getElementById('radarChart');
             const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth * 2;
-            canvas.height = canvas.offsetHeight * 2;
-            ctx.scale(2, 2);
-            
-            const w = canvas.offsetWidth, h = canvas.offsetHeight;
-            const centerX = w / 2, centerY = h / 2, radius = 80;
-            const dims = [
-                {key:'wealth', label:'财富'}, {key:'chill', label:'悠闲'},
-                {key:'global', label:'全球'}, {key:'vibe', label:'活力'},
-                {key:'nature', label:'自然'}, {key:'safety', label:'安全'}
-            ];
+            canvas.width = 400; canvas.height = 400;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 150;
+            const labels = ['事业', '文化', '自然', '平衡', '社交', '品质'];
+            const dimensions = city.scores;
 
-            // 绘制背景
-            ctx.strokeStyle = '#ddd';
-            for(let i=1; i<=5; i++) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1;
+            for (let level = 1; level <= 5; level++) {
                 ctx.beginPath();
-                dims.forEach((_, idx) => {
-                    const angle = (Math.PI*2 * idx) / 6 - Math.PI/2;
-                    const r = (radius/5)*i;
-                    ctx[idx===0?'moveTo':'lineTo'](centerX + Math.cos(angle)*r, centerY + Math.sin(angle)*r);
-                });
-                ctx.closePath();
-                ctx.stroke();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+                    const r = (radius / 5) * level;
+                    const x = centerX + r * Math.cos(angle);
+                    const y = centerY + r * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.closePath(); ctx.stroke();
             }
 
-            // 绘制数据函数
-            function drawLayer(data, color, isUser) {
-                ctx.beginPath();
-                dims.forEach((d, idx) => {
-                    const angle = (Math.PI*2 * idx) / 6 - Math.PI/2;
-                    let val = isUser ? data[d.key] : data[d.key];
-                    val = Math.max(2, Math.min(10, val)); // 限制范围
-                    const r = (radius * val) / 10;
-                    ctx[idx===0?'moveTo':'lineTo'](centerX + Math.cos(angle)*r, centerY + Math.sin(angle)*r);
-                });
-                ctx.closePath();
-                ctx.fillStyle = color;
-                ctx.fill();
-                ctx.strokeStyle = color.replace('0.4', '1');
-                ctx.stroke();
+            ctx.strokeStyle = '#ccc';
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.lineTo(x, y); ctx.stroke();
             }
 
-            drawLayer(city, 'rgba(0, 188, 212, 0.4)', false); // 城市
-            drawLayer(userScores, 'rgba(76, 175, 80, 0.4)', true); // 用户
+            ctx.fillStyle = '#333'; ctx.font = '14px PingFang SC'; ctx.textAlign = 'center';
+            const labelRadius = radius + 25;
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+                const x = centerX + labelRadius * Math.cos(angle);
+                const y = centerY + labelRadius * Math.sin(angle);
+                ctx.fillText(labels[i], x, y);
+            }
 
-            // 文字
-            ctx.fillStyle = '#666';
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            dims.forEach((d, idx) => {
-                const angle = (Math.PI*2 * idx) / 6 - Math.PI/2;
-                ctx.fillText(d.label, centerX + Math.cos(angle)*(radius+20), centerY + Math.sin(angle)*(radius+20)+5);
-            });
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(0, 188, 212, 0.3)'; ctx.strokeStyle = '#00bcd4'; ctx.lineWidth = 2;
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+                const value = dimensions[i] / 10;
+                const r = radius * value;
+                const x = centerX + r * Math.cos(angle);
+                const y = centerY + r * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.closePath(); ctx.fill(); ctx.stroke();
+
+            ctx.fillStyle = '#00bcd4';
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+                const value = dimensions[i] / 10;
+                const r = radius * value;
+                const x = centerX + r * Math.cos(angle);
+                const y = centerY + r * Math.sin(angle);
+                ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        function restartQuiz() {
+            document.getElementById('resultScreen').classList.remove('active');
+            document.getElementById('startScreen').classList.add('active');
+            userScores = [0, 0, 0, 0, 0, 0];
+            currentQuestionIndex = 0;
         }
     </script>
 </body>
