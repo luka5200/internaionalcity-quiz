@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国际城市灵魂匹配 - 找到你的全球天选之城</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'PingFang SC', sans-serif; background: linear-gradient(135deg, #00bcd4 0%, #4caf50 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .quiz-container { background: #fff; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 700px; width: 100%; padding: 40px; max-height: 95vh; overflow-y: auto; }
+        .screen { display: none; }
+        .active { display: block; }
+        .title { font-size: 2.2rem; text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, #00bcd4 0%, #4caf50 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 12px; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
+        .start-btn { background: linear-gradient(135deg, #00bcd4 0%, #4caf50 100%); color: white; font-weight: bold; }
+        .option-btn { background: #f8f9fa; color: #333; text-align: left; padding: 18px; line-height: 1.4; }
+        .option-btn:hover { background: #e9ecef; transform: translateX(10px); }
+        .progress-bar { width: 100%; height: 8px; background: #eee; border-radius: 4px; margin-bottom: 30px; }
+        .progress-fill { height: 100%; background: #00bcd4; width: 0%; border-radius: 4px; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="startScreen" class="screen active">
+            <h1 class="title">灵魂匹配测试</h1>
+            <p style="text-align: center; color: #666; margin-bottom: 30px;">通过 20 个生活维度，为您匹配全球最契合的城市。</p>
+            <button class="btn start-btn" onclick="startQuiz()">立即测试</button>
+        </div>
+        <div id="quizScreen" class="screen">
+            <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+            <h2 id="questionText" style="margin-bottom: 20px;">加载中...</h2>
+            <div id="optionsContainer"></div>
+        </div>
+        <div id="resultScreen" class="screen">
+            <h2 class="title">匹配结果</h2>
+            <div id="resultCity" style="font-size: 2.5rem; text-align: center; color: #00bcd4; margin: 20px 0; font-weight: bold;"></div>
+            <p id="cityDesc" style="text-align: center; color: #666; line-height: 1.8; padding: 20px; background: #f9f9f9; border-radius: 10px;"></p>
+            <button class="btn start-btn" onclick="location.reload()" style="margin-top: 30px;">重新测试</button>
+        </div>
+    </div>
+
+    <script>
+        // 这一部分就是你要的 20 道完整题目
+        const questions = [
+            { text: "在周六的下午，你更倾向于？", options: [
+                { text: "在繁华商场探索潮流设计", scores: { wealth: 3, global: 2 } },
+                { text: "在静谧公园阅读", scores: { nature: 3, chill: 2 } },
+                { text: "去Livehouse听场音乐", scores: { vibe: 3, global: 1 } },
+                { text: "在路边摊喝啤酒聊天", scores: { vibe: 2, chill: 3 } }
+            ]},
+            { text: "关于居住环境，你最不能忍受？", options: [
+                { text: "半夜依然喧闹的街道", scores: { safety: 3, chill: 2 } },
+                { text: "没有绿色的水泥森林", scores: { nature: 3 } },
+                { text: "买不到最新的国际品牌", scores: { wealth: 2, global: 3 } },
+                { text: "死气沉沉没有社交活力", scores: { vibe: 3 } }
+            ]},
+            { text: "你理想的通勤方式是？", options: [
+                { text: "高效准时的地铁网络", scores: { global: 3, wealth: 1 } },
+                { text: "骑着自行车穿过林荫道", scores: { nature: 3, chill: 2 } },
+                { text: "步行，一路上全是精致小店", scores: { vibe: 3, chill: 1 } },
+                { text: "打车或自驾，享受私人空间", scores: { wealth: 3, safety: 1 } }
+            ]},
+            { text: "面对陌生的社交场合，你会？", options: [
+                { text: "主动社交，结识不同背景的人", scores: { global: 3, vibe: 2 } },
+                { text: "观察四周，寻找有趣的艺术角落", scores: { vibe: 3 } },
+                { text: "保持礼貌但更喜欢独处", scores: { chill: 3, safety: 2 } },
+                { text: "只和认识的朋友待在一起", scores: { safety: 3 } }
+            ]},
+            { text: "你对‘奢华’的定义更接近？", options: [
+                { text: "世界顶级品牌的旗舰店", scores: { wealth: 3, global: 2 } },
+                { text: "推开窗就是雪山或大海", scores: { nature: 3, chill: 2 } },
+                { text: "极具个性的私人订制服务", scores: { vibe: 3, wealth: 1 } },
+                { text: "极致的安全感与隐私保护", scores: { safety: 3, wealth: 2 } }
+            ]},
+            { text: "当你心情不好时，你会去？", options: [
+                { text: "繁华的十字路口看人群流向", scores: { global: 2, vibe: 2 } },
+                { text: "无人的森林或海边发呆", scores: { nature: 3, chill: 3 } },
+                { text: "去最喜欢的餐厅大吃一顿", scores: { vibe: 2, wealth: 1 } },
+                { text: "锁好门窗在家里睡觉", scores: { safety: 3, chill: 1 } }
+            ]},
+            { text: "关于食物，你更看重？", options: [
+                { text: "能吃到全世界各种口味", scores: { global: 3, wealth: 1 } },
+                { text: "食材必须是有机且新鲜的", scores: { nature: 3, safety: 2 } },
+                { text: "用餐环境的氛围与独特性", scores: { vibe: 3 } },
+                { text: "随处可见且价格实惠的美味", scores: { chill: 3, vibe: 1 } }
+            ]},
+            { text: "你的事业目标更偏向？", options: [
+                { text: "在全球顶尖公司获得高薪", scores: { wealth: 3, global: 3 } },
+                { text: "做自己热爱的小众艺术事业", scores: { vibe: 3, chill: 1 } },
+                { text: "追求稳定的工作与生活平衡", scores: { chill: 3, safety: 3 } },
+                { text: "投身环保或自然相关的行业", scores: { nature: 3, global: 1 } }
+            ]},
+            { text: "你对‘邻居’的期待是？", options: [
+                { text: "来自世界各地的精英群体", scores: { global: 3, wealth: 2 } },
+                { text: "安静、互不打扰的普通家庭", scores: { safety: 3, chill: 2 } },
+                { text: "充满热情的本地老街坊", scores: { vibe: 3, chill: 1 } },
+                { text: "根本不需要邻居，更爱自然", scores: { nature: 3 } }
+            ]},
+            { text: "你更喜欢哪种气候？", options: [
+                { text: "四季分明，感受不同节气", scores: { nature: 2, vibe: 1 } },
+                { text: "常年阳光灿烂的温暖地带", scores: { chill: 3, nature: 1 } },
+                { text: "清凉、多云，适合思考", scores: { chill: 2, safety: 1 } },
+                { text: "室内控温完美，不在乎天气", scores: { wealth: 3, global: 2 } }
+            ]},
+            { text: "周末旅行你会选择？", options: [
+                { text: "国际大都市购物中心", scores: { wealth: 3, global: 3 } },
+                { text: "深山里的温泉私密酒店", scores: { nature: 3, chill: 3 } },
+                { text: "历史悠久的文化古镇", scores: { vibe: 3, nature: 1 } },
+                { text: "治安最好的海滨小镇", scores: { safety: 3, chill: 2 } }
+            ]},
+            { text: "你理想的交通工具是？", options: [
+                { text: "超跑或高级轿车", scores: { wealth: 3, global: 1 } },
+                { text: "复古自行车或徒步", scores: { nature: 3, vibe: 2 } },
+                { text: "四通八达的高铁或飞机", scores: { global: 3, wealth: 1 } },
+                { text: "极其准时的公交巴士", scores: { safety: 3, chill: 2 } }
+            ]},
+            { text: "你更看重城市的哪种设施？", options: [
+                { text: "世界级的金融中心和写字楼", scores: { wealth: 3, global: 3 } },
+                { text: "到处都是的开放式公园", scores: { nature: 3, chill: 2 } },
+                { text: "随处可见的咖啡馆和书店", scores: { vibe: 3, chill: 2 } },
+                { text: "24小时巡逻的安全监控系统", scores: { safety: 3, wealth: 1 } }
+            ]},
+            { text: "关于理财，你更倾向于？", options: [
+                { text: "激进投资，追求高回报", scores: { wealth: 3, global: 2 } },
+                { text: "只要能满足基本生活就够", scores: { chill: 3, nature: 1 } },
+                { text: "投资在自己的爱好和收藏上", scores: { vibe: 3, wealth: 1 } },
+                { text: "存银行，安全第一", scores: { safety: 3, chill: 2 } }
+            ]},
+            { text: "你更看重哪种文化氛围？", options: [
+                { text: "包容万象的移民文化", scores: { global: 3, vibe: 1 } },
+                { text: "悠久保守的传统文化", scores: { safety: 3, chill: 1 } },
+                { text: "先锋前卫的亚文化", scores: { vibe: 3, global: 1 } },
+                { text: "敬畏自然的原生文化", scores: { nature: 3, chill: 2 } }
+            ]},
+            { text: "假如你在路上遇到流浪艺人？", options: [
+                { text: "停下来欣赏并给予打赏", scores: { vibe: 3, chill: 1 } },
+                { text: "匆匆路过，赶往下一个会议", scores: { wealth: 3, global: 2 } },
+                { text: "觉得这种不确定性有些危险", scores: { safety: 3 } },
+                { text: "拍张照分享到社交软件", scores: { global: 2, vibe: 2 } }
+            ]},
+            { text: "你理想的养老地是？", options: [
+                { text: "医疗资源顶级的发达城市", scores: { wealth: 3, safety: 3 } },
+                { text: "空气清新的乡间别墅", scores: { nature: 3, chill: 3 } },
+                { text: "有各种有趣活动的老年社区", scores: { vibe: 3, global: 1 } },
+                { text: "低物价的东南亚海岛", scores: { chill: 3, global: 1 } }
+            ]},
+            { text: "对于高科技，你的态度是？", options: [
+                { text: "必须第一手尝试最新产品", scores: { global: 3, wealth: 2 } },
+                { text: "怀疑态度，更喜欢自然古朴", scores: { nature: 3, chill: 2 } },
+                { text: "只要能带来便利和安全就行", scores: { safety: 3, wealth: 1 } },
+                { text: "科技是用来创造艺术的", scores: { vibe: 3, global: 1 } }
+            ]},
+            { text: "在城市中，你最喜欢的颜色是？", options: [
+                { text: "充满金钱气息的金色/灰色", scores: { wealth: 3, global: 1 } },
+                { text: "满眼充满生机的翠绿色", scores: { nature: 3, chill: 2 } },
+                { text: "色彩斑斓的街头涂鸦色", scores: { vibe: 3, global: 1 } },
+                { text: "整洁明亮的白色/浅蓝色", scores: { safety: 3, chill: 1 } }
+            ]},
+            { text: "你最希望拥有的超能力是？", options: [
+                { text: "瞬间移动到世界任何城市", scores: { global: 3, wealth: 1 } },
+                { text: "能与动植物交流", scores: { nature: 3, chill: 2 } },
+                { text: "拥有无尽的财富", scores: { wealth: 3, safety: 1 } },
+                { text: "让身边的人永远感到快乐", scores: { vibe: 3, chill: 2 } }
+            ]}
+        ];
+
+        // 包含 30 个完整城市的数据
+        const cities = [
+            { name: "苏黎世 (Zurich)", desc: "你追求极致的安全、秩序与生活品质。苏黎世不仅有顶尖的金融体系，还有触手可及的湖光山色。" },
+            { name: "纽约 (New York)", desc: "你是天生的野心家。在这座世界之都，你将永远处于效率与潮流的最中心。" },
+            { name: "清迈 (Chiang Mai)", desc: "你向往悠闲、低成本且亲近自然的生活。在这里，灵魂可以得到彻底的放松。" },
+            { name: "伦敦 (London)", desc: "你喜欢古典与现代的碰撞。在全球化程度极高的伦敦，你总能找到自己的归宿。" },
+            { name: "东京 (Tokyo)", desc: "你迷恋极致的秩序与便利，同时也热爱独特的二次元与街头文化。" },
+            { name: "柏林 (Berlin)", desc: "你是个自由灵魂。柏林的前卫、包容与艺术氛围是你灵感的源泉。" },
+            { name: "温哥华 (Vancouver)", desc: "大自然是你的本命。在这里，你可以在森林中徒步，也可以在城市中享受便利。" },
+            { name: "新加坡 (Singapore)", desc: "你追求极致的安全与效率。这颗热带明珠能给你最安心的现代都市生活。" },
+            { name: "阿姆斯特丹 (Amsterdam)", desc: "你喜欢自由随性的氛围。运河边漫步或骑行是你的生活理想。" },
+            { name: "悉尼 (Sydney)", desc: "阳光、海滩与职场机会的完美结合。你是那个热爱生活的热血青年。" },
+            { name: "迪拜 (Dubai)", desc: "你追求极致的财富感与建筑奇迹。在这里，你可以感受人类意志带来的极致体验。" },
+            { name: "哥本哈根 (Copenhagen)", desc: "你是“Hygge”生活的践行者。简约、环保与高福利是你最看重的因素。" },
+            { name: "巴黎 (Paris)", desc: "浪漫与历史已经刻在你的基因里。塞纳河畔的每一处转角都是你的梦境。" },
+            { name: "上海 (Shanghai)", desc: "你享受速度与竞争。这座魔都能提供你想要的一切城市便利与商业可能。" },
+            { name: "维也纳 (Vienna)", desc: "你是艺术与古典主义的崇拜者。在这里，音乐与皇宫将伴随你的每一天。" },
+            { name: "旧金山 (San Francisco)", desc: "你热爱科技创新与自由价值观。硅谷的微风是你奋斗的动力。" },
+            { name: "墨尔本 (Melbourne)", desc: "你是个咖啡与艺术爱好者。墨尔本巷弄里的文化底蕴最能打动你。" },
+            { name: "斯德哥尔摩 (Stockholm)", desc: "你追求北欧设计的极简与自然。水城之美能让你的内心变得宁静。" },
+            { name: "奥斯陆 (Oslo)", desc: "你是大自然的守护者。在这里，森林与现代文明只有一步之遥。" },
+            { name: "多伦多 (Toronto)", desc: "你喜欢多元文化共生的氛围。多伦多能给你提供一个安全且充满机会的职场环境。" },
+            { name: "里斯本 (Lisbon)", desc: "你向往慵懒、明媚的南欧阳光。古老的电车与海边的落日是你最想要的浪漫。" },
+            { name: "巴塞罗那 (Barcelona)", desc: "高迪的建筑与地中海的海鲜。你是个热爱生活、充满热情的灵魂。" },
+            { name: "首尔 (Seoul)", desc: "你喜欢极速的网络、潮流服饰与便利的深夜文化。你属于这里的繁华。" },
+            { name: "特拉维夫 (Tel Aviv)", desc: "你喜欢地中海的活力与科技创业的激情。这里是永远在派对中的城市。" },
+            { name: "奥克兰 (Auckland)", desc: "纯净、自然、与世无争。你是那种追求极致纯朴生活的探索者。" },
+            { name: "蒙特利尔 (Montreal)", desc: "你迷恋双语环境下的欧洲风情。北美的便利与法国的优雅在这里并存。" },
+            { name: "卢森堡 (Luxembourg)", desc: "低调、极富、且极度安全。你是那种看重实力的精英分子。" },
+            { name: "马德里 (Madrid)", desc: "你享受热闹的夜生活与西班牙的热情。生活在这里意味着永远不会感到孤单。" },
+            { name: "波士顿 (Boston)", desc: "你是个学者灵魂。书香气、学术氛围与深厚的历史感是你最好的陪伴。" },
+            { name: "曼谷 (Bangkok)", desc: "你享受烟火气与极致的便利。在这里，古老的寺庙与摩天大楼完美融合。" }
+        ];
+
+        let currentIdx = 0;
+        let userScores = { wealth: 0, chill: 0, global: 0, vibe: 0, nature: 0, safety: 0 };
+
+        function startQuiz() {
+            if (!localStorage.getItem('intlCityQuizVerified')) {
+                alert('请从首页输入验证码进入');
+                window.location.href = 'index.html';
+                return;
+            }
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('quizScreen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('questionText').textContent = (currentIdx + 1) + ". " + q.text;
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach(opt => {
+                const b = document.createElement('button');
+                b.className = 'btn option-btn';
+                b.textContent = opt.text;
+                b.onclick = () => {
+                    for(let k in opt.scores) userScores[k] += opt.scores[k];
+                    currentIdx++;
+                    if(currentIdx < questions.length) showQuestion();
+                    else showResult();
+                };
+                container.appendChild(b);
+            });
+            document.getElementById('progressFill').style.width = ((currentIdx + 1) / questions.length * 100) + '%';
+        }
+
+        function showResult() {
+            document.getElementById('quizScreen').classList.remove('active');
+            document.getElementById('resultScreen').classList.add('active');
+            
+            // 简单的权重计算：选最高分的维度
+            let topDim = 'global';
+            let maxVal = -1;
+            for(let k in userScores) {
+                if(userScores[k] > maxVal) {
+                    maxVal = userScores[k];
+                    topDim = k;
+                }
+            }
+
+            // 根据维度匹配城市（这里采用简化的逻辑）
+            const map = {
+                wealth: [1, 10, 26], // 纽约、迪拜、卢森堡
+                nature: [2, 6, 18, 24], // 清迈、温哥华、奥斯陆、奥克兰
+                global: [3, 7, 13, 22], // 伦敦、新加坡、上海、首尔
+                vibe: [5, 12, 16, 21], // 柏林、巴黎、墨尔本、巴塞罗那
+                safety: [0, 11, 14, 28], // 苏黎世、哥本哈根、维也纳、波士顿
+                chill: [2, 8, 20, 29] // 清迈、阿姆斯特丹、里斯本、曼谷
+            };
+
+            const pool = map[topDim] || [0, 1, 2];
+            const resultIdx = pool[Math.floor(Math.random() * pool.length)];
+            const result = cities[resultIdx];
+            
+            document.getElementById('resultCity').textContent = result.name;
+            document.getElementById('cityDesc').textContent = result.desc;
+        }
+    </script>
+</body>
+</html>
