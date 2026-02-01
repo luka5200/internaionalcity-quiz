@@ -24,8 +24,6 @@
             width: 100%;
             padding: 40px 30px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
         }
         h1 {
             font-size: 28px;
@@ -61,7 +59,7 @@
         <p class="subtitle">15道精准题目，30个国际城市<br>发现与你灵魂最契合的全球城市！</p>
         
         <div class="input-group">
-            <input type="text" id="codeInput" class="code-input" placeholder="输入验证码">
+            <input type="text" id="codeInput" class="code-input" placeholder="请输入验证码">
         </div>
         
         <button class="submit-btn" onclick="verifyCode()">开始测试</button>
@@ -69,6 +67,7 @@
     </div>
 
     <script>
+        // 在这里添加你的验证码
         const validCodes = ['GLOBAL2026', 'WORLD888', 'INTL777', 'CITY999', 'URBAN555', 'METRO333', 'TOWN444', 'ZONE666', 'AREA111', 'DIST222'];
         
         function verifyCode() {
@@ -76,15 +75,47 @@
             const errorMessage = document.getElementById('errorMessage');
             const enteredCode = codeInput.value.toUpperCase().trim();
             
+            // 1. 获取这个浏览器“已使用过”的验证码列表
+            let usedCodes = JSON.parse(localStorage.getItem('used_quiz_codes') || '[]');
+
+            // 2. 检查验证码是否为空
+            if (!enteredCode) return;
+
+            // 3. 检查：这个码是不是已经被用过了？
+            if (usedCodes.includes(enteredCode)) {
+                errorMessage.textContent = "该验证码已失效（此设备已使用过）";
+                showError();
+                return;
+            }
+
+            // 4. 检查：这个码是不是有效的码？
             if (validCodes.includes(enteredCode)) {
-                // 1. 设置验证通过标记
+                // 验证通过！
+                
+                // A. 把这个码加入“已使用”名单，存入浏览器
+                usedCodes.push(enteredCode);
+                localStorage.setItem('used_quiz_codes', JSON.stringify(usedCodes));
+                
+                // B. 发放入场券
                 localStorage.setItem('intlCityQuizVerified', 'true');
-                // 2. 直接跳转到 quiz.html (请确保 GitHub 文件名已改回 quiz.html)
+                
+                // C. 跳转
                 window.location.href = 'quiz.html';
             } else {
-                errorMessage.style.display = 'block';
-                codeInput.style.borderColor = '#dc3545';
+                // 验证码根本就不存在
+                errorMessage.textContent = "验证码错误";
+                showError();
             }
+        }
+
+        function showError() {
+            const errorMessage = document.getElementById('errorMessage');
+            const codeInput = document.getElementById('codeInput');
+            errorMessage.style.display = 'block';
+            codeInput.style.borderColor = '#dc3545';
+            setTimeout(() => {
+                codeInput.style.borderColor = '#e0e0e0';
+            }, 2000);
         }
         
         document.getElementById('codeInput').addEventListener('keypress', function(e) {
